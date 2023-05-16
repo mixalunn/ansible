@@ -1,0 +1,57 @@
+---
+- name: Check if Docker is already present.
+  ansible.builtin.command: which docker
+  failed_when: false
+  changed_when: false
+  check_mode: false
+  register: docker_command_result
+
+- name: Include setup for Oracle Linux
+  ansible.builtin.include_tasks: setup-ol.yml
+  when: ansible_distribution == 'OracleLinux' and docker_command_result.rc == 1
+
+- name: Include setup using script
+  ansible.builtin.include_tasks: setup-script.yml
+  when: ansible_distribution != 'OracleLinux' and docker_command_result.rc == 1
+
+- name: Make sure Docker CE is the version specified.
+  ansible.builtin.package:
+    name: "docker-ce={{ docker_version }}"
+    state: present
+    force: true
+  when: docker_version != 'latest'
+
+- name: Ensure Docker is started.
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+# Intall optional package for docker
+
+- name: Install pip3
+  ansible.builtin.package:
+    name: python3-pip
+    state: present
+  when: docker_install_compose | bool or docker_install_python_module | bool
+
+- name: Install Docker Compose using Pip.
+  ansible.builtin.pip:
+    name: docker-compose
+    state: present
+    executable: pip3
+  when: docker_install_compose | bool
+
+- name: Install Docker Python module using Pip
+  ansible.builtin.pip:
+    name: docker
+    state: present
+    executable: pip3
+  when: docker_install_python_module | bool
+
+- name: Ensure docker users are added to the docker group.
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: docker
+    append: true
+  loop: "{{ docker_users }}"

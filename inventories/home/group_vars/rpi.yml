@@ -1,0 +1,6 @@
+---
+ansible_user: pi
+docker_users:
+  - pi
+systemd_dir: /etc/systemd/system
+master_ip: "{{ hostvars[groups['rpi_master'][0]]['ansible_default_ipv4']['address'] | default(groups['rpi_master'][0]) }}"

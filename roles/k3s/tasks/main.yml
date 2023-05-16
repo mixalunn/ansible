@@ -1,0 +1,13 @@
+---
+- name: Setup raspberry
+  ansible.builtin.include_tasks: rpi-setup.yml
+  tags:
+    - setup_rpi
+
+- name: Setup master
+  ansible.builtin.include_tasks: master.yml
+  when: k3s_role == "master"
+
+- name: Setup node
+  ansible.builtin.include_tasks: node.yml
+  when: k3s_role == "node"

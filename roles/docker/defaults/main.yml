@@ -1,0 +1,5 @@
+---
+docker_version: "latest"
+docker_install_compose: false
+docker_users: ["{{ ansible_user }}"]
+docker_install_python_module: false

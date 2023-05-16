@@ -1,0 +1,16 @@
+---
+- name: Install Raspberru Pi extra kernel modules
+  ansible.builtin.apt:
+    update_cache: true
+    name: linux-modules-extra-raspi
+    state: present
+  when: "ansible_distribution_version is version('20.10', '>=')"
+  notify: Reboot
+
+- name: Enable cgroup via boot commandline if not already enabled for Ubuntu on a Raspberry Pi
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/cmdline.txt
+    backrefs: true
+    regexp: '^((?!.*\bcgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory\b).*)$'
+    line: '\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory'
+  notify: Reboot

@@ -1,0 +1,9 @@
+---
+# Setup shell
+- name: Setup shell & cope configs
+  hosts: all
+
+  roles:
+    - configs_copy
+    - starship
+    - zsh

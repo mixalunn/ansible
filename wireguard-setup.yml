@@ -1,0 +1,9 @@
+---
+# Setup wireguard (linux)
+
+- name: Intsall Wireguard server
+  become: true
+  hosts: bastion
+
+  roles:
+    - wireguard

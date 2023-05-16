@@ -1,0 +1,43 @@
+---
+- name: Check if Starship is already present.
+  ansible.builtin.command: which starship
+  failed_when: false
+  changed_when: false
+  check_mode: false
+  register: starship_command_result
+
+- name: Install unzip
+  become: true
+  ansible.builtin.package:
+    name: unzip
+    state: present
+
+- name: Check fonts directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.fonts"
+    state: directory
+    mode: "0755"
+  register: fonts_directory
+
+- name: Download Nerd Fonts
+  ansible.builtin.unarchive:
+    src: https://github.com/ryanoasis/nerd-fonts/releases/latest/download/UbuntuMono.zip
+    dest: "{{ ansible_env.HOME }}/.fonts"
+    remote_src: true
+    mode: "0655"
+  notify:
+    - Reload fonts cache
+
+- name: Download Starship install script
+  ansible.builtin.get_url:
+    url: https://starship.rs/install.sh
+    dest: /tmp/starship-install.sh
+    mode: "0755"
+  when: starship_command_result.rc == 1
+
+- name: Install Starship
+  become: true
+  ansible.builtin.command: "/tmp/starship-install.sh -y"
+  register: script_result
+  changed_when: script_result.rc != 0
+  when: starship_command_result.rc == 1

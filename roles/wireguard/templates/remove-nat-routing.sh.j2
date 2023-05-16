@@ -1,0 +1,11 @@
+IPT="/sbin/iptables"
+IN_FACE="{{ external_port_name }}"
+WG_FACE="{{ wg_interface_name }}"
+SUB_NET="{{ wg_subnet }}"
+WG_PORT="{{ wg_server_port }}"
+
+$IPT -t nat -D POSTROUTING 1 -s $SUB_NET -o $IN_FACE -j MASQUERADE
+$IPT -D INPUT 1 -i $WG_FACE -j ACCEPT
+$IPT -D FORWARD 1 -i $IN_FACE -o $WG_FACE -j ACCEPT
+$IPT -D FORWARD 1 -i $WG_FACE -o $IN_FACE -j ACCEPT
+$IPT -D INPUT 1 -i $IN_FACE -p udp --dport $WG_PORT -j ACCEPT

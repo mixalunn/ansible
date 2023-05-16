@@ -1,0 +1,11 @@
+---
+- name: Install Font Config
+  become: true
+  ansible.builtin.package:
+    name: fontconfig
+    state: present
+
+- name: Reload fonts cache
+  ansible.builtin.command: fc-cache -fv
+  register: fonts_cache_update
+  changed_when: fonts_cache_update.rc != 0

@@ -1,0 +1,17 @@
+---
+- name: Download configs from repo
+  ansible.builtin.git:
+    repo: git@github.com:mikhailyuntsevich/dotfiles.git
+    dest: /tmp/configs
+    version: HEAD # noqa: latest
+
+- name: Copy configs
+  become: true
+  ansible.posix.synchronize:
+    src: /tmp/configs/
+    dest: "{{ ansible_env.HOME }}"
+    rsync_opts:
+      - "--exclude=.git"
+      - "--exclude=README.md"
+      - "--chmod=700"
+  delegate_to: "{{ inventory_hostname }}"

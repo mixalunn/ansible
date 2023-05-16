@@ -1,0 +1,10 @@
+---
+# Reboot playbook
+
+- name: Reboot all
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Rebooting all
+      ansible.builtin.reboot:

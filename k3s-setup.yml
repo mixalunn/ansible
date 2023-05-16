@@ -1,0 +1,12 @@
+---
+# Playbook for k3s setup
+
+- name: Setup k3s kluster on Raspberry Pi
+  hosts: rpi
+  become: true
+
+  roles:
+    - role: docker
+      tags: setup_docker
+    - role: k3s
+      tags: always

@@ -1,0 +1,14 @@
+[Interface]
+PrivateKey = {{ wg_server_private_key }}
+Address = {{ wg_interface_address }}
+ListenPort = {{ wg_server_port }}
+{% if enable_nat == true %}
+PostUp = /etc/wireguard/add-nat-routing.sh
+PostDown = /etc/wireguard/remove-nat-routing.sh
+{% endif %}
+
+{% for peer in wg_list_peers %}
+[Peer]
+PublicKey = {{ peer.public_key }}
+AllowedIPs = {{ peer.networks }}
+{% endfor %}
