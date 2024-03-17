@@ -1,0 +1,11 @@
+---
+- name: Remove Podman from Rocky Linux
+  hosts: all
+  become: true
+  tasks:
+    - name: Uninstall Podman package
+      ansible.builtin.package:
+        name: podman.x86_64
+        state: absent
+        autoremove: true
+

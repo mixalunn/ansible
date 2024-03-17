@@ -3,7 +3,7 @@
 
 - name: Setup server
   become: true
-  hosts: wg
+  hosts: all
   vars:
     docker_install_python_module: true
   roles:
@@ -20,10 +20,12 @@
           - /opt/portainer:/data
         ports:
           - 9443:9443
+  tags:
+    - server
 
 - name: Setup agents
   become: true
-  hosts: nextcloud
+  hosts: all
   vars:
     docker_install_python_module: true
   roles:
@@ -47,3 +49,5 @@
         permanent: true
         immediate: true
         state: enabled
+  tags:
+    - agent

@@ -7,8 +7,10 @@
   register: docker_command_result
 
 - name: Include setup for Oracle Linux
-  ansible.builtin.include_tasks: setup-ol.yml
-  when: ansible_distribution == 'OracleLinux' and docker_command_result.rc == 1
+  ansible.builtin.include_tasks: setup-rhel-based.yml
+  when:
+    - (ansible_distribution == 'OracleLinux' or ansible_distribution == 'Rocky')
+    - docker_command_result.rc == 1
 
 - name: Include setup using script
   ansible.builtin.include_tasks: setup-script.yml
