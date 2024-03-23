@@ -1,0 +1,27 @@
+- name: Update System Packages
+  hosts: all
+  become: true
+  tasks:
+    - name: Update apt package cache (Debian-based systems)
+      ansible.builtin.apt:
+        update_cache: true
+      when: ansible_pkg_mgr == 'apt'
+
+    - name: Upgrade all packages (Debian-based systems)
+      ansible.builtin.apt:
+        upgrade: true
+        autoremove: true
+        autoclean: true
+      when: ansible_pkg_mgr == 'apt'
+
+    - name: Update yum package cache (Red Hat-based systems)
+      ansible.builtin.dnf:
+        update_cache: true
+      when: ansible_pkg_mgr == 'dnf'
+
+    - name: Upgrade all packages (Red Hat-based systems)
+      ansible.builtin.dnf:
+        name: '*'
+        state: latest
+        update_only: true
+      when: ansible_pkg_mgr == 'dnf'

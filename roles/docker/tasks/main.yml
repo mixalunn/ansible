@@ -6,15 +6,17 @@
   check_mode: false
   register: docker_command_result
 
-- name: Include setup for Oracle Linux
+- name: Include setup for Redhat Family
   ansible.builtin.include_tasks: setup-rhel-based.yml
   when:
-    - (ansible_distribution == 'OracleLinux' or ansible_distribution == 'Rocky')
+    - ansible_os_family == 'RedHat'
     - docker_command_result.rc == 1
 
 - name: Include setup using script
   ansible.builtin.include_tasks: setup-script.yml
-  when: ansible_distribution != 'OracleLinux' and docker_command_result.rc == 1
+  when:
+    - ansible_os_family != 'RedHat'
+    - docker_command_result.rc == 1
 
 - name: Make sure Docker CE is the version specified.
   ansible.builtin.package:
