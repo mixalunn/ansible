@@ -8,3 +8,13 @@
         name: podman.x86_64
         state: absent
         autoremove: true
+
+- name: Setup Cockpit File Sharing Apllication
+  hosts: all
+  become: true
+  tasks:
+    - name: Intsall form repo using .rpm
+      ansible.builtin.dnf:
+        name: "https://github.com/45Drives/cockpit-file-sharing/releases/download/v3.2.9/cockpit-file-sharing-3.2.9-2.el8.noarch.rpm"
+        state: present
+        disable_gpg_check: true
