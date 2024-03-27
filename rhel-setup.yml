@@ -1,5 +1,5 @@
 ---
-- name: Remove Podman from Rocky Linux
+- name: Remove Podman 
   hosts: all
   become: true
   tasks:
