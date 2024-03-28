@@ -1,4 +1,10 @@
 ---
+- name: Install Git package
+  become: true
+  ansible.builtin.package:
+    name: git
+    state: present
+
 - name: Download configs from repo
   ansible.builtin.git:
     repo: git@github.com:mikhailyuntsevich/dotfiles.git

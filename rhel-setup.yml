@@ -1,20 +1,43 @@
 ---
-- name: Remove Podman 
-  hosts: all
+- name: Setup RHEL
+  hosts: nb
   become: true
-  tasks:
+  vars:
+    docker_install_python_module: true
+  roles:
+    - docker
+
+  pre_tasks:
     - name: Uninstall Podman package
       ansible.builtin.package:
         name: podman.x86_64
         state: absent
         autoremove: true
 
-- name: Setup Cockpit File Sharing Apllication
-  hosts: all
-  become: true
   tasks:
+    - name: Disable SELinux
+      ansible.posix.selinux:
+        state: disabled
+      notify:
+        - Reboot
     - name: Intsall form repo using .rpm
       ansible.builtin.dnf:
         name: "https://github.com/45Drives/cockpit-file-sharing/releases/download/v3.2.9/cockpit-file-sharing-3.2.9-2.el8.noarch.rpm"
         state: present
         disable_gpg_check: true
+    - name: Disable suspend on laptop lid close
+      ansible.builtin.lineinfile:
+        path: "/etc/systemd/logind.conf"
+        state: present
+        regexp: "^HandleLidSwitch=[A-Za-z]+"
+        line: "HandleLidSwitch=lock"
+      notify:
+        - Restart logind
+
+  handlers:
+    - name: Reboot
+      ansible.builtin.reboot:
+    - name: Restart logind
+      ansible.builtin.service:
+        name: systemd-logind
+        state: restarted
