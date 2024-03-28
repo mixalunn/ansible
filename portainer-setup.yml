@@ -3,7 +3,7 @@
 
 - name: Setup server
   become: true
-  hosts: all
+  hosts: nb1.home
   vars:
     docker_install_python_module: true
   roles:
@@ -12,20 +12,22 @@
     - name: Run docker container with portainer server
       community.docker.docker_container:
         name: portainer-ce
-        image: portainer/portainer-ce:2.18.1
+        image: portainer/portainer-ce
         state: started
         restart_policy: always
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock
-          - /opt/portainer:/data
+          - portainer_data:/data
         ports:
           - 9443:9443
+        networks:
+          - name: npm
   tags:
     - server
 
 - name: Setup agents
   become: true
-  hosts: all
+  hosts: nb2.home
   vars:
     docker_install_python_module: true
   roles:
@@ -34,7 +36,7 @@
     - name: Run docker container with portainer client
       community.docker.docker_container:
         name: portainer_agent
-        image: portainer/agent:2.18.1
+        image: portainer/agent
         state: started
         restart_policy: always
         volumes:
