@@ -20,7 +20,22 @@
         state: disabled
       notify:
         - Reboot
-    - name: Intsall form repo using .rpm
+    - name: Install Samba and NFS
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - samba
+        - nfs-utils
+    - name: Enable samba service on startup
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop:
+        - smb
+        - nmb
+    - name: Intsall Cockpit File Sharing form repo using .rpm
       ansible.builtin.dnf:
         name: "https://github.com/45Drives/cockpit-file-sharing/releases/download/v3.2.9/cockpit-file-sharing-3.2.9-2.el8.noarch.rpm"
         state: present
